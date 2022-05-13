@@ -9,21 +9,24 @@ import com.rrvieira.trendyt.data.movies.MoviesRepository
 import com.rrvieira.trendyt.model.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val apiService: MoviesRepository) : ViewModel() {
-    var movieListResponse: List<Movie> by mutableStateOf(listOf())
-    val movieState = MutableStateFlow<HomeViewModelState>(HomeViewModelState.START)
+    var movieList: List<Movie> by mutableStateOf(listOf())
+
+    private val _movieState = MutableStateFlow<HomeViewModelState>(HomeViewModelState.START)
+    val movieState : StateFlow<HomeViewModelState> = _movieState
 
     fun getMovieList() {
         viewModelScope.launch {
             apiService.fetchPopularMovies(1).onSuccess { data ->
-                movieListResponse = data
-                movieState.emit(HomeViewModelState.SUCCESS)
+                movieList = data
+                _movieState.emit(HomeViewModelState.SUCCESS)
             }.onFailure { error ->
-                movieState.emit(HomeViewModelState.FAILURE(error.localizedMessage ?: ""))
+                _movieState.emit(HomeViewModelState.FAILURE(error.localizedMessage ?: ""))
             }
         }
     }

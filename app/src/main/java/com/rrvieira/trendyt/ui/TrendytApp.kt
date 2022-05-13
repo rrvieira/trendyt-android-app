@@ -43,7 +43,7 @@ fun TrendytApp() {
                 }
 
                 HomeViewModelState.SUCCESS -> {
-                    MovieFeedScreen(movieList = viewModel.movieListResponse)
+                    MovieFeedScreen(movieList = viewModel.movieList)
                 }
             }
         }
