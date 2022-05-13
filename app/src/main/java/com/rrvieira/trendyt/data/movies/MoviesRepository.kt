@@ -1,7 +1,7 @@
 package com.rrvieira.trendyt.data.movies
 
-import javax.inject.Inject
+import com.rrvieira.trendyt.model.Movie
 
-class MoviesRepository @Inject constructor(private val moviesRemoteDataSource: MoviesRemoteDataSource) {
-    suspend fun fetchPopularMovies(page: Int) = moviesRemoteDataSource.getPopularMovies(page)
+interface MoviesRepository {
+    suspend fun fetchPopularMovies(page: Int) : Result<List<Movie>>
 }

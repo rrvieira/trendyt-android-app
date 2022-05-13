@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val apiService: MoviesRepository) : ViewModel() {
+class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository) : ViewModel() {
     var movieList: List<Movie> by mutableStateOf(listOf())
 
     private val _movieState = MutableStateFlow<HomeViewModelState>(HomeViewModelState.START)
@@ -22,7 +22,7 @@ class HomeViewModel @Inject constructor(private val apiService: MoviesRepository
 
     fun getMovieList() {
         viewModelScope.launch {
-            apiService.fetchPopularMovies(1).onSuccess { data ->
+            moviesRepo.fetchPopularMovies(1).onSuccess { data ->
                 movieList = data
                 _movieState.emit(HomeViewModelState.SUCCESS)
             }.onFailure { error ->

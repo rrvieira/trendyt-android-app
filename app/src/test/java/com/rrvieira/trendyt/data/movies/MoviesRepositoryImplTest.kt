@@ -9,7 +9,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MoviesRepositoryTest {
+class MoviesRepositoryImplTest {
 
     @Test
     fun fetchPopularMovies() = runTest {
@@ -35,7 +35,7 @@ class MoviesRepositoryTest {
 
         coEvery { mockMoviesRemoteDataSource.getPopularMovies(pageToFetch) } returns mockedResponse
 
-        val moviesRepository = MoviesRepository(mockMoviesRemoteDataSource)
+        val moviesRepository = MoviesRepositoryImpl(mockMoviesRemoteDataSource)
 
         assertEquals(mockedResponse, moviesRepository.fetchPopularMovies(pageToFetch))
     }
