@@ -1,40 +1,84 @@
 package com.rrvieira.trendyt.ui.home
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rrvieira.trendyt.data.movies.MoviesRepository
 import com.rrvieira.trendyt.model.Movie
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository) : ViewModel() {
-    var movieList: List<Movie> by mutableStateOf(listOf())
 
-    private val _movieState = MutableStateFlow<HomeViewModelState>(HomeViewModelState.START)
-    val movieState : StateFlow<HomeViewModelState> = _movieState
+    private val viewModelState = MutableStateFlow(HomeViewModelState(isLoading = true))
 
-    fun getMovieList() {
+    // UI state exposed to the UI
+    val uiState = viewModelState
+        .map { it.toUiState() }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            viewModelState.value.toUiState()
+        )
+
+    init {
+        refreshMovies()
+    }
+
+    fun refreshMovies() {
+        viewModelState.update { it.copy(isLoading = true) }
+
         viewModelScope.launch {
-            moviesRepo.fetchPopularMovies(1).onSuccess { data ->
-                movieList = data
-                _movieState.emit(HomeViewModelState.SUCCESS)
-            }.onFailure { error ->
-                _movieState.emit(HomeViewModelState.FAILURE(error.localizedMessage ?: ""))
+            val result = moviesRepo.fetchPopularMovies(1)
+            viewModelState.update { state ->
+                val feed = result.getOrElse { throwable ->
+                    val errorMessages = state.errorMessages + (throwable.message ?: "")
+                    return@update state.copy(errorMessages = errorMessages, isLoading = false)
+                }
+
+                state.copy(moviesFeed = feed, isLoading = false)
             }
         }
     }
 }
 
-sealed class HomeViewModelState {
-    object START : HomeViewModelState()
-    object LOADING : HomeViewModelState()
-    object SUCCESS : HomeViewModelState()
-    data class FAILURE(val message: String) : HomeViewModelState()
+sealed interface HomeUiState {
+    val isLoading: Boolean
+    val errorMessages: List<String>
+
+    data class NoMovies(
+        override val isLoading: Boolean,
+        override val errorMessages: List<String>
+    ) : HomeUiState
+
+    data class HasMovies(
+        val moviesFeed: List<Movie>,
+        override val isLoading: Boolean,
+        override val errorMessages: List<String>
+    ) : HomeUiState
+}
+
+private data class HomeViewModelState(
+    val moviesFeed: List<Movie>? = null,
+    val isLoading: Boolean = false,
+    val errorMessages: List<String> = emptyList()
+) {
+    fun toUiState(): HomeUiState =
+        when {
+            moviesFeed != null -> {
+                HomeUiState.HasMovies(
+                    moviesFeed = moviesFeed,
+                    isLoading = isLoading,
+                    errorMessages = errorMessages,
+                )
+            }
+            else -> {
+                HomeUiState.NoMovies(
+                    isLoading = isLoading,
+                    errorMessages = errorMessages,
+                )
+            }
+        }
 }

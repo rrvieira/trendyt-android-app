@@ -61,13 +61,13 @@ class MoviesRemoteDataSourceTest {
             listOf(
                 Movie(
                     title = popularMoviesResponse.popularMovies[0].title,
-                    imageUrl = popularMoviesResponse.popularMovies[0].posterPath,
+                    imageUrl = "https://image.tmdb.org/t/p/w780/6DrHO1jr3qVrViUO6s6kFiAGM7.jpg",
                     overview = popularMoviesResponse.popularMovies[0].overview,
                     category = "28, 878, 35, 10751, 12"
                 ),
                 Movie(
                     title = popularMoviesResponse.popularMovies[1].title,
-                    imageUrl = popularMoviesResponse.popularMovies[1].posterPath,
+                    imageUrl = "https://image.tmdb.org/t/p/w780/5P8SmMzSNYikXpxil6BYzJ16611.jpg",
                     overview = popularMoviesResponse.popularMovies[1].overview,
                     category = "80, 9648, 53"
                 ),

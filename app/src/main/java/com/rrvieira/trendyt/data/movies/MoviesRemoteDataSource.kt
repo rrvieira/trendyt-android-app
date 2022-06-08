@@ -3,6 +3,7 @@ package com.rrvieira.trendyt.data.movies
 import com.rrvieira.trendyt.api.MoviesApiClient
 import com.rrvieira.trendyt.di.IODispatcher
 import com.rrvieira.trendyt.model.Movie
+import com.rrvieira.trendyt.model.MovieDetails
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -17,13 +18,20 @@ class MoviesRemoteDataSource @Inject constructor(
             return@withContext Result.failure(error)
         }.popularMovies.map { movie ->
             Movie(
+                movie.id,
                 movie.title,
-                movie.posterPath,
-                movie.overview,
-                movie.genreIds.joinToString(", ")
+                "https://image.tmdb.org/t/p/w780${movie.backdropPath}"
             )
         }
 
         Result.success(movies)
+    }
+
+    suspend fun getMovieDetails(id: Int) = withContext(ioDispatcher) {
+        val movieResponse = moviesApiClient.getMovieDetails(id).getOrElse { error ->
+            return@withContext Result.failure(error)
+        }
+
+        Result.success(MovieDetails(movieResponse.id, movieResponse.title))
     }
 }
