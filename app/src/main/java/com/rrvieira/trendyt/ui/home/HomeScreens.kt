@@ -13,11 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.rrvieira.trendyt.R
-import com.rrvieira.trendyt.model.Movie
+import com.rrvieira.trendyt.model.MovieSummary
 
 val LazyListState.isScrolled: Boolean
     get() = firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0
@@ -71,7 +70,7 @@ fun MovieFeedScreen(
             state = moviesLazyListState
         ) {
             itemsIndexed(items = uiState.moviesFeed) { _, item ->
-                MovieItem(movie = item, onSelect = onSelectMovie)
+                MovieItem(movieSummary = item, onSelect = onSelectMovie)
             }
         }
     }
@@ -79,14 +78,14 @@ fun MovieFeedScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieItem(movie: Movie, onSelect: (Int) -> Unit) {
+fun MovieItem(movieSummary: MovieSummary, onSelect: (Int) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(20.dp, 8.dp)
             .clickable {
-                onSelect(movie.id)
+                onSelect(movieSummary.id)
             }
     ) {
 
@@ -97,7 +96,7 @@ fun MovieItem(movie: Movie, onSelect: (Int) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
-                model = movie.imageUrl,
+                model = movieSummary.imageUrl,
                 contentScale = ContentScale.FillWidth,
                 contentDescription = null
             )
@@ -106,11 +105,11 @@ fun MovieItem(movie: Movie, onSelect: (Int) -> Unit) {
                 modifier = Modifier.padding(8.dp, 12.dp)
             ) {
                 Text(
-                    text = movie.title,
+                    text = movieSummary.title,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "May 06, 2022",
+                    text = movieSummary.releaseDate.toString(),
                     style = MaterialTheme.typography.labelMedium
                 )
             }

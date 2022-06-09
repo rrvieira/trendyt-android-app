@@ -17,6 +17,9 @@ import javax.inject.Singleton
 class RepositoriesModule {
 
     @Provides
-    fun provideMoviesRepository(moviesRemoteDataSource: MoviesRemoteDataSource): MoviesRepository =
-        MoviesRepositoryImpl(moviesRemoteDataSource)
+    fun provideMoviesRepository(
+        moviesRemoteDataSource: MoviesRemoteDataSource,
+        @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
+    ): MoviesRepository =
+        MoviesRepositoryImpl(moviesRemoteDataSource, defaultDispatcher)
 }

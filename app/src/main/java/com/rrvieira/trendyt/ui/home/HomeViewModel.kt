@@ -3,7 +3,7 @@ package com.rrvieira.trendyt.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rrvieira.trendyt.data.movies.MoviesRepository
-import com.rrvieira.trendyt.model.Movie
+import com.rrvieira.trendyt.model.MovieSummary
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository
         refreshMovies()
     }
 
-    fun refreshMovies() {
+    private fun refreshMovies() {
         viewModelState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
@@ -54,14 +54,14 @@ sealed interface HomeUiState {
     ) : HomeUiState
 
     data class HasMovies(
-        val moviesFeed: List<Movie>,
+        val moviesFeed: List<MovieSummary>,
         override val isLoading: Boolean,
         override val errorMessages: List<String>
     ) : HomeUiState
 }
 
 private data class HomeViewModelState(
-    val moviesFeed: List<Movie>? = null,
+    val moviesFeed: List<MovieSummary>? = null,
     val isLoading: Boolean = false,
     val errorMessages: List<String> = emptyList()
 ) {

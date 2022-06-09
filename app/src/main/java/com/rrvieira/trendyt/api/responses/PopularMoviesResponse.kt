@@ -1,6 +1,7 @@
 package com.rrvieira.trendyt.api.responses
 
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class PopularMoviesResponse(
     @SerializedName("page")
@@ -33,7 +34,7 @@ data class PopularMovie(
     @SerializedName("poster_path")
     val posterPath: String,
     @SerializedName("release_date")
-    val releaseDate: String,
+    val releaseDate: Date,
     @SerializedName("title")
     val title: String,
     @SerializedName("video")

@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rrvieira.trendyt.data.movies.MoviesRepository
-import com.rrvieira.trendyt.model.Movie
+import com.rrvieira.trendyt.model.MovieSummary
 import com.rrvieira.trendyt.model.MovieDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -36,7 +36,7 @@ class DetailsViewModel @Inject constructor(private val moviesRepo: MoviesReposit
 
     fun fetchMovieDetails(movieId: Int) {
         Log.d("AQUI", "fetchMovieDetails")
-        viewModelState.update { it.copy(isLoading = true, movie = null) }
+        viewModelState.update { it.copy(isLoading = true, movieSummary = null) }
 
         viewModelScope.launch {
             val result = moviesRepo.fetchMovieDetails(movieId)
@@ -62,7 +62,7 @@ sealed interface DetailsUiState {
     ) : DetailsUiState
 
     data class NoDetails(
-        val movie: Movie,
+        val movieSummary: MovieSummary,
         override val isLoading: Boolean,
         override val errorMessages: List<String>,
     ) : DetailsUiState
@@ -75,7 +75,7 @@ sealed interface DetailsUiState {
 }
 
 private data class DetailsViewModelState(
-    val movie: Movie? = null,
+    val movieSummary: MovieSummary? = null,
     val movieDetails: MovieDetails? = null,
     val isLoading: Boolean = false,
     val errorMessages: List<String> = emptyList()
@@ -88,9 +88,9 @@ private data class DetailsViewModelState(
                 errorMessages = emptyList()
             )
         }
-        movie != null -> {
+        movieSummary != null -> {
             DetailsUiState.NoDetails(
-                movie = movie,
+                movieSummary = movieSummary,
                 isLoading = true,
                 errorMessages = emptyList()
             )

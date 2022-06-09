@@ -2,6 +2,7 @@ package com.rrvieira.trendyt.api.responses
 
 
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class MovieResponse(
     @SerializedName("adult")
@@ -35,7 +36,7 @@ data class MovieResponse(
     @SerializedName("production_countries")
     val productionCountries: List<ProductionCountry>,
     @SerializedName("release_date")
-    val releaseDate: String,
+    val releaseDate: Date,
     @SerializedName("revenue")
     val revenue: Int,
     @SerializedName("runtime")

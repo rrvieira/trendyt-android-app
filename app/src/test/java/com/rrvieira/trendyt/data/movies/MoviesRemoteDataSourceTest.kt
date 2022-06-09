@@ -3,7 +3,7 @@ package com.rrvieira.trendyt.data.movies
 import com.rrvieira.trendyt.api.MoviesApiClient
 import com.rrvieira.trendyt.api.responses.PopularMovie
 import com.rrvieira.trendyt.api.responses.PopularMoviesResponse
-import com.rrvieira.trendyt.model.Movie
+import com.rrvieira.trendyt.model.MovieSummary
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,13 +59,13 @@ class MoviesRemoteDataSourceTest {
         val mockedResponse = Result.success(popularMoviesResponse)
         val expected = Result.success(
             listOf(
-                Movie(
+                MovieSummary(
                     title = popularMoviesResponse.popularMovies[0].title,
                     imageUrl = "https://image.tmdb.org/t/p/w780/6DrHO1jr3qVrViUO6s6kFiAGM7.jpg",
                     overview = popularMoviesResponse.popularMovies[0].overview,
                     category = "28, 878, 35, 10751, 12"
                 ),
-                Movie(
+                MovieSummary(
                     title = popularMoviesResponse.popularMovies[1].title,
                     imageUrl = "https://image.tmdb.org/t/p/w780/5P8SmMzSNYikXpxil6BYzJ16611.jpg",
                     overview = popularMoviesResponse.popularMovies[1].overview,

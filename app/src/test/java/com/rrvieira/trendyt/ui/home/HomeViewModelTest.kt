@@ -1,7 +1,7 @@
 package com.rrvieira.trendyt.ui.home
 
 import com.rrvieira.trendyt.data.movies.MoviesRepository
-import com.rrvieira.trendyt.model.Movie
+import com.rrvieira.trendyt.model.MovieSummary
 import com.rrvieira.trendyt.rules.MainDispatcherRule
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -20,13 +20,13 @@ class HomeViewModelTest {
     @Test
     fun getMovieListSuccess() = runTest {
         val expected = listOf(
-            Movie(
+            MovieSummary(
                 title = "Sonic the Hedgehog 2",
                 imageUrl = "/6DrHO1jr3qVrViUO6s6kFiAGM7.jpg",
                 overview = "After settling in Green Hills, Sonic is eager to prove he has what it takes to be a true hero.",
                 category = listOf(28, 878, 35, 10751, 12).joinToString(", ")
             ),
-            Movie(
+            MovieSummary(
                 title = "The Batman",
                 imageUrl = "/5P8SmMzSNYikXpxil6BYzJ16611.jpg",
                 overview = "In his second year of fighting crime, Batman uncovers corruption in Gotham City that connects to his own family while facing a serial killer known as the Riddler.",
