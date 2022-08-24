@@ -1,5 +1,8 @@
 package com.rrvieira.trendyt.di
 
+import com.rrvieira.trendyt.data.configuration.ConfigurationRemoteDataSource
+import com.rrvieira.trendyt.data.configuration.ConfigurationRepository
+import com.rrvieira.trendyt.data.configuration.ConfigurationRepositoryImpl
 import com.rrvieira.trendyt.data.movies.MoviesRemoteDataSource
 import com.rrvieira.trendyt.data.movies.MoviesRepository
 import com.rrvieira.trendyt.data.movies.MoviesRepositoryImpl
@@ -19,7 +22,13 @@ class RepositoriesModule {
     @Provides
     fun provideMoviesRepository(
         moviesRemoteDataSource: MoviesRemoteDataSource,
-        @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
+        configurationRepository: ConfigurationRepository
     ): MoviesRepository =
-        MoviesRepositoryImpl(moviesRemoteDataSource, defaultDispatcher)
+        MoviesRepositoryImpl(moviesRemoteDataSource, configurationRepository)
+
+    @Provides
+    fun provideConfigurationRepository(
+        configurationRemoteDataSource: ConfigurationRemoteDataSource
+    ): ConfigurationRepository =
+        ConfigurationRepositoryImpl(configurationRemoteDataSource)
 }

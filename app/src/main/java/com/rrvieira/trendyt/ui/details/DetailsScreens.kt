@@ -17,7 +17,6 @@ fun HasDetailsScreen(
     uiState: DetailsUiState.HasDetails,
     onTopBarBackPressed: () -> Unit
 ) {
-
     Scaffold(
         modifier = modifier,
         topBar = {

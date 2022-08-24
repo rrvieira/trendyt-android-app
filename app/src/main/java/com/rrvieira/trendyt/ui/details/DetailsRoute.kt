@@ -11,7 +11,6 @@ fun DetailsRoute(
     movieId: Int,
     onTopBarBackPressed: () -> Unit
 ) {
-
     LaunchedEffect(Unit) {
         viewModel.fetchMovieDetails(movieId)
     }

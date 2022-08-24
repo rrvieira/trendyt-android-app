@@ -1,6 +1,5 @@
 package com.rrvieira.trendyt.ui.details
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rrvieira.trendyt.data.movies.MoviesRepository
@@ -16,7 +15,6 @@ class DetailsViewModel @Inject constructor(private val moviesRepo: MoviesReposit
 
     private val viewModelState = MutableStateFlow(DetailsViewModelState(isLoading = true))
 
-    // UI state exposed to the UI
     val uiState = viewModelState
         .map { it.toUiState() }
         .stateIn(
@@ -25,17 +23,7 @@ class DetailsViewModel @Inject constructor(private val moviesRepo: MoviesReposit
             viewModelState.value.toUiState()
         )
 
-    init {
-        Log.d("AQUI", "CRIADO")
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.d("AQUI", "onCleared")
-    }
-
     fun fetchMovieDetails(movieId: Int) {
-        Log.d("AQUI", "fetchMovieDetails")
         viewModelState.update { it.copy(isLoading = true, movieSummary = null) }
 
         viewModelScope.launch {
@@ -102,6 +90,4 @@ private data class DetailsViewModelState(
             )
         }
     }
-
-
 }
