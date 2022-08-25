@@ -18,6 +18,7 @@ class MoviesRepositoryImpl(
                     MovieSummary(
                         id = movie.id,
                         title = movie.title,
+                        rating = movie.voteAverage,
                         releaseDate = movie.releaseDate,
                         imageUrl = apiConfiguration.urlForBackdrop(movie.backdropPath)
                     )
