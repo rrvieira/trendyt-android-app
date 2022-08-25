@@ -8,8 +8,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
+import java.util.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
@@ -18,43 +20,49 @@ class HomeViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun getMovieListSuccess() = runTest {
+    fun refreshMoviesSuccess() = runTest {
         val expected = listOf(
             MovieSummary(
+                id = 0,
                 title = "Sonic the Hedgehog 2",
-                imageUrl = "/6DrHO1jr3qVrViUO6s6kFiAGM7.jpg",
-                overview = "After settling in Green Hills, Sonic is eager to prove he has what it takes to be a true hero.",
-                category = listOf(28, 878, 35, 10751, 12).joinToString(", ")
+                imageUrl = "http://image.com/sonic.jpg",
+                rating = 7.0f,
+                releaseDate = GregorianCalendar(2022, Calendar.MARCH, 30).time
             ),
             MovieSummary(
+                id = 1,
                 title = "The Batman",
-                imageUrl = "/5P8SmMzSNYikXpxil6BYzJ16611.jpg",
-                overview = "In his second year of fighting crime, Batman uncovers corruption in Gotham City that connects to his own family while facing a serial killer known as the Riddler.",
-                category = listOf(80, 9648, 53).joinToString(", ")
+                imageUrl = "http://image.com/batman.jpg",
+                rating = 8.0f,
+                releaseDate = GregorianCalendar(2022, Calendar.MARCH, 1).time
             ),
         )
 
-        val moviesRepo = mockk<MoviesRepository>()
-        coEvery { moviesRepo.fetchPopularMovies(1) } returns Result.success(expected)
+        val mockMoviesRepo = mockk<MoviesRepository>()
+        coEvery { mockMoviesRepo.fetchPopularMovies(1) } returns Result.success(expected)
 
-        val homeViewModel = HomeViewModel(moviesRepo)
-        homeViewModel.getMovieList()
+        val homeViewModel = HomeViewModel(mockMoviesRepo)
 
-        assertEquals(HomeViewModelState.SUCCESS, homeViewModel.movieState.value)
-        assertEquals(expected, homeViewModel.movieList)
+        val state = homeViewModel.uiState.value as? HomeUiState.HasMovies
+        assertNotNull("Current state not expected", state)
+        assertEquals(expected, state?.moviesFeed)
+        assertEquals(emptyList<String>(), state?.errorMessages)
+        assertEquals(false, state?.isLoading)
     }
 
     @Test
-    fun getMovieListError() = runTest {
+    fun refreshMoviesError() = runTest {
         val errorMessage = "some error"
-        val expected = Throwable(errorMessage)
+        val expected = listOf(errorMessage)
 
-        val moviesRepo = mockk<MoviesRepository>()
-        coEvery { moviesRepo.fetchPopularMovies(1) } returns Result.failure(expected)
+        val mockMoviesRepo = mockk<MoviesRepository>()
+        val mockedFetchPopularMovies = Throwable(errorMessage)
+        coEvery { mockMoviesRepo.fetchPopularMovies(1) } returns Result.failure(mockedFetchPopularMovies)
 
-        val homeViewModel = HomeViewModel(moviesRepo)
-        homeViewModel.getMovieList()
+        val homeViewModel = HomeViewModel(mockMoviesRepo)
 
-        assertEquals(HomeViewModelState.FAILURE(errorMessage), homeViewModel.movieState.value)
+        val state = homeViewModel.uiState.value
+        assertEquals(expected, state.errorMessages)
+        assertEquals(false, state.isLoading)
     }
 }

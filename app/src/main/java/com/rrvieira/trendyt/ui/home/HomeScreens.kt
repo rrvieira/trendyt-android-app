@@ -40,7 +40,6 @@ fun MovieFeedScreen(
                 backgroundColor = MaterialTheme.colorScheme.surface,
                 elevation = if (!moviesLazyListState.isScrolled) 0.dp else 4.dp
             ) {
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
@@ -56,12 +55,9 @@ fun MovieFeedScreen(
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                     )
-
                 }
             }
-
         }
-
     ) { contentPadding ->
         LazyColumn(
             contentPadding = WindowInsets.systemBars

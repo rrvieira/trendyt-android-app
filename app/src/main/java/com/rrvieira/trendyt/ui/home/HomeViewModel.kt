@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository
         refreshMovies()
     }
 
-    private fun refreshMovies() {
+    fun refreshMovies() {
         viewModelState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
@@ -38,7 +38,7 @@ class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository
                     return@update state.copy(errorMessages = errorMessages, isLoading = false)
                 }
 
-                state.copy(moviesFeed = feed, isLoading = false)
+                state.copy(moviesFeed = feed, isLoading = false, errorMessages = emptyList())
             }
         }
     }

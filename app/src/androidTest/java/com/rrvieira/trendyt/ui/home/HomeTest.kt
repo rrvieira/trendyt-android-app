@@ -1,8 +1,11 @@
 package com.rrvieira.trendyt.ui.home
 
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onSiblings
+import com.rrvieira.trendyt.data.movies.TestMoviesRepository
 import com.rrvieira.trendyt.ui.MainActivity
 import com.rrvieira.trendyt.ui.TrendytApp
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -23,13 +26,11 @@ class HomeTest {
     @Before
     fun setup() {
         hiltTestRule.inject()
-        composeTestRule.setContent {
-            TrendytApp()
-        }
     }
 
     @Test
     fun popularMoviesDisplayed() {
-        composeTestRule.onNodeWithText("The Batman").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Bullet Train").assertIsDisplayed()
+        //composeTestRule.onNodeWithText("Bullet Train").onSiblings().assertCountEquals(4)
     }
 }
