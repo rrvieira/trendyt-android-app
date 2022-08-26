@@ -41,8 +41,11 @@ class ConfigurationRemoteDataSourceTest {
         )
         val expected = Result.success(apiConfigurationResponse)
 
-        val mockMoviesApiClient = mockk<MoviesApiClient>()
-        coEvery { mockMoviesApiClient.getApiConfiguration() } returns Result.success(apiConfigurationResponse)
+        val mockMoviesApiClient = mockk<MoviesApiClient> {
+            coEvery { getApiConfiguration() } returns Result.success(
+                apiConfigurationResponse
+            )
+        }
 
         val configurationRemoteDataSource = ConfigurationRemoteDataSource(
             mockMoviesApiClient,

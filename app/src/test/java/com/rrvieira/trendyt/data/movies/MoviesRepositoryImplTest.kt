@@ -3,10 +3,9 @@ package com.rrvieira.trendyt.data.movies
 import com.rrvieira.trendyt.api.responses.PopularMovie
 import com.rrvieira.trendyt.api.responses.PopularMoviesResponse
 import com.rrvieira.trendyt.data.configuration.ConfigurationRepository
-import com.rrvieira.trendyt.model.ApiConfiguration
 import com.rrvieira.trendyt.model.MovieSummary
-import com.rrvieira.trendyt.model.urlForBackdrop
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -58,37 +57,42 @@ class MoviesRepositoryImplTest {
             totalPages = 1,
             totalResults = 2
         )
-        val apiConfiguration = ApiConfiguration(
-            imagesBaseUrl = "http://base-url.com",
-            posterSize = "poster-size",
-            backdropSize = "backdrop-size"
-        )
+
+        val movieImageUrl = "http://some-url/image.jpg"
+
         val expected = Result.success(
             listOf(
                 MovieSummary(
                     id = popularMoviesResponse.popularMovies[0].id,
                     title = popularMoviesResponse.popularMovies[0].title,
-                    imageUrl = apiConfiguration.urlForBackdrop(popularMoviesResponse.popularMovies[0].backdropPath),
+                    imageUrl = movieImageUrl,
                     rating = popularMoviesResponse.popularMovies[0].voteAverage,
                     releaseDate = popularMoviesResponse.popularMovies[0].releaseDate
                 ),
                 MovieSummary(
                     id = popularMoviesResponse.popularMovies[1].id,
                     title = popularMoviesResponse.popularMovies[1].title,
-                    imageUrl = apiConfiguration.urlForBackdrop(popularMoviesResponse.popularMovies[1].backdropPath),
+                    imageUrl = movieImageUrl,
                     rating = popularMoviesResponse.popularMovies[1].voteAverage,
                     releaseDate = popularMoviesResponse.popularMovies[1].releaseDate
                 ),
             )
         )
 
-        val mockMoviesRemoteDataSource = mockk<MoviesRemoteDataSource>()
-        val mockConfigurationRepository = mockk<ConfigurationRepository>()
         val pageToFetch = 1
-        coEvery { mockMoviesRemoteDataSource.getPopularMovies(pageToFetch) } returns Result.success(popularMoviesResponse)
-        coEvery { mockConfigurationRepository.fetchConfiguration() } returns Result.success(apiConfiguration)
+        val mockMoviesRemoteDataSource = mockk<MoviesRemoteDataSource> {
+            coEvery { getPopularMovies(pageToFetch) } returns Result.success(
+                popularMoviesResponse
+            )
+        }
+        val mockConfigurationRepository = mockk<ConfigurationRepository> {
+            coEvery { fetchConfiguration() } returns Result.success(mockk {
+                every { urlForBackdrop(any()) } returns movieImageUrl
+            })
+        }
 
-        val moviesRepository = MoviesRepositoryImpl(mockMoviesRemoteDataSource, mockConfigurationRepository)
+        val moviesRepository =
+            MoviesRepositoryImpl(mockMoviesRemoteDataSource, mockConfigurationRepository)
 
         assertEquals(expected, moviesRepository.fetchPopularMovies(pageToFetch))
     }

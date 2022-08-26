@@ -58,9 +58,10 @@ class MoviesRemoteDataSourceTest {
         )
         val expected = Result.success(popularMoviesResponse)
 
-        val mockMoviesApiClient = mockk<MoviesApiClient>()
         val pageToFetch = 1
-        coEvery { mockMoviesApiClient.getPopularMovies(pageToFetch) } returns Result.success(popularMoviesResponse)
+        val mockMoviesApiClient = mockk<MoviesApiClient> {
+            coEvery { getPopularMovies(pageToFetch) } returns Result.success(popularMoviesResponse)
+        }
 
         val moviesRemoteDataSource =
             MoviesRemoteDataSource(mockMoviesApiClient, UnconfinedTestDispatcher(testScheduler))

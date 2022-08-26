@@ -46,10 +46,11 @@ class ConfigurationRepositoryImplTest {
             )
         )
 
-        val mockConfigurationRemoteDataSource = mockk<ConfigurationRemoteDataSource>()
-        coEvery { mockConfigurationRemoteDataSource.getApiConfiguration() } returns Result.success(
-            apiConfigurationResponse
-        )
+        val mockConfigurationRemoteDataSource = mockk<ConfigurationRemoteDataSource> {
+            coEvery { getApiConfiguration() } returns Result.success(
+                apiConfigurationResponse
+            )
+        }
 
         val configurationRepository = ConfigurationRepositoryImpl(mockConfigurationRemoteDataSource)
 

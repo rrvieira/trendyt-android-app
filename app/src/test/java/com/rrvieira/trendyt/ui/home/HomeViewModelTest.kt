@@ -38,8 +38,9 @@ class HomeViewModelTest {
             ),
         )
 
-        val mockMoviesRepo = mockk<MoviesRepository>()
-        coEvery { mockMoviesRepo.fetchPopularMovies(1) } returns Result.success(expected)
+        val mockMoviesRepo = mockk<MoviesRepository> {
+            coEvery { fetchPopularMovies(1) } returns Result.success(expected)
+        }
 
         val homeViewModel = HomeViewModel(mockMoviesRepo)
 
@@ -55,9 +56,9 @@ class HomeViewModelTest {
         val errorMessage = "some error"
         val expected = listOf(errorMessage)
 
-        val mockMoviesRepo = mockk<MoviesRepository>()
-        val mockedFetchPopularMovies = Throwable(errorMessage)
-        coEvery { mockMoviesRepo.fetchPopularMovies(1) } returns Result.failure(mockedFetchPopularMovies)
+        val mockMoviesRepo = mockk<MoviesRepository> {
+            coEvery { fetchPopularMovies(1) } returns Result.failure(Throwable(errorMessage))
+        }
 
         val homeViewModel = HomeViewModel(mockMoviesRepo)
 
