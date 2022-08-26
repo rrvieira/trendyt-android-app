@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository
     }
 
     fun refreshMovies() {
-        viewModelState.update { it.copy(isLoading = true) }
+        viewModelState.update { it.copy(isLoading = true, errorMessages = emptyList()) }
 
         viewModelScope.launch {
             val result = moviesRepo.fetchPopularMovies(1)
@@ -47,6 +47,8 @@ class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository
 sealed interface HomeUiState {
     val isLoading: Boolean
     val errorMessages: List<String>
+    val hasError: Boolean
+        get() = errorMessages.isNotEmpty()
 
     data class NoMovies(
         override val isLoading: Boolean,
