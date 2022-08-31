@@ -3,7 +3,6 @@ package com.rrvieira.trendyt.ui.details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rrvieira.trendyt.data.movies.MoviesRepository
-import com.rrvieira.trendyt.model.MovieSummary
 import com.rrvieira.trendyt.model.MovieDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -24,14 +23,14 @@ class DetailsViewModel @Inject constructor(private val moviesRepo: MoviesReposit
         )
 
     fun fetchMovieDetails(movieId: Int) {
-        viewModelState.update { it.copy(isLoading = true, movieSummary = null) }
+        viewModelState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             val result = moviesRepo.fetchMovieDetails(movieId)
             viewModelState.update { state ->
                 val movieDetails = result.getOrElse { throwable ->
-                    val errorMessages = state.errorMessages + (throwable.message ?: "")
-                    return@update state.copy(errorMessages = errorMessages, isLoading = false)
+                    val errorMessage = throwable.message ?: ""
+                    return@update state.copy(errorMessage = errorMessage, isLoading = false)
                 }
 
                 state.copy(movieDetails = movieDetails, isLoading = false)
@@ -41,52 +40,31 @@ class DetailsViewModel @Inject constructor(private val moviesRepo: MoviesReposit
 }
 
 sealed interface DetailsUiState {
-    val isLoading: Boolean
-    val errorMessages: List<String>
-
     data class Empty(
-        override val isLoading: Boolean,
-        override val errorMessages: List<String>,
-    ) : DetailsUiState
-
-    data class NoDetails(
-        val movieSummary: MovieSummary,
-        override val isLoading: Boolean,
-        override val errorMessages: List<String>,
+        val isLoading: Boolean,
+        val errorMessage: String?,
     ) : DetailsUiState
 
     data class HasDetails(
-        val movieDetails: MovieDetails,
-        override val isLoading: Boolean,
-        override val errorMessages: List<String>,
+        val movieDetails: MovieDetails
     ) : DetailsUiState
 }
 
 private data class DetailsViewModelState(
-    val movieSummary: MovieSummary? = null,
     val movieDetails: MovieDetails? = null,
     val isLoading: Boolean = false,
-    val errorMessages: List<String> = emptyList()
+    val errorMessage: String? = null
 ) {
     fun toUiState(): DetailsUiState = when {
         movieDetails != null -> {
             DetailsUiState.HasDetails(
-                movieDetails = movieDetails,
-                isLoading = true,
-                errorMessages = emptyList()
-            )
-        }
-        movieSummary != null -> {
-            DetailsUiState.NoDetails(
-                movieSummary = movieSummary,
-                isLoading = true,
-                errorMessages = emptyList()
+                movieDetails = movieDetails
             )
         }
         else -> {
             DetailsUiState.Empty(
-                isLoading = true,
-                errorMessages = emptyList()
+                isLoading = isLoading,
+                errorMessage = errorMessage
             )
         }
     }

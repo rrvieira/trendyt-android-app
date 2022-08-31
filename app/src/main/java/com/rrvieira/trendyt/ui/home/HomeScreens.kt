@@ -50,21 +50,10 @@ fun NoMoviesScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Image(
-                        modifier = Modifier.size(100.dp),
-                        painter = painterResource(id = R.drawable.movie),
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                    )
-                    Spacer(Modifier.height(8.dp))
                     if (uiState.isLoading) {
                         LinearProgressIndicator()
                     } else {
-                        Text(
-                            style = MaterialTheme.typography.labelMedium,
-                            text = stringResource(id = R.string.no_movies_message),
-                            textAlign = TextAlign.Center
-                        )
+                        EmptyNotice()
                     }
                 }
             }
@@ -154,6 +143,28 @@ fun MovieItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun EmptyNotice(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Image(
+            modifier = Modifier.size(100.dp),
+            painter = painterResource(id = R.drawable.movie),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            style = MaterialTheme.typography.labelMedium,
+            text = stringResource(id = R.string.no_movies_message),
+            textAlign = TextAlign.Center
+        )
     }
 }
 

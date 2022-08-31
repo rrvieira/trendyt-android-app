@@ -1,5 +1,6 @@
 package com.rrvieira.trendyt.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rrvieira.trendyt.R
+import com.rrvieira.trendyt.ui.TrendytAppFoundation
 import com.rrvieira.trendyt.ui.theme.TrendytTheme
 
 @Composable
@@ -45,14 +47,16 @@ fun RetryScreen(
     }
 }
 
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-@Preview(showBackground = true)
 fun PreviewRetryScreen() {
-    TrendytTheme {
-        RetryScreen(
-            modifier = Modifier.fillMaxSize()
-        ) {
-
+    TrendytAppFoundation {
+        Surface {
+            RetryScreen(
+                modifier = Modifier.fillMaxSize()
+            ) {
+            }
         }
     }
 }

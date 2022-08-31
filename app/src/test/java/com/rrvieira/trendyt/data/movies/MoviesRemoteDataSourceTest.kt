@@ -1,6 +1,7 @@
 package com.rrvieira.trendyt.data.movies
 
 import com.rrvieira.trendyt.api.MoviesApiClient
+import com.rrvieira.trendyt.api.responses.MovieResponse
 import com.rrvieira.trendyt.api.responses.PopularMovie
 import com.rrvieira.trendyt.api.responses.PopularMoviesResponse
 import io.mockk.coEvery
@@ -67,5 +68,49 @@ class MoviesRemoteDataSourceTest {
             MoviesRemoteDataSource(mockMoviesApiClient, UnconfinedTestDispatcher(testScheduler))
 
         assertEquals(expected, moviesRemoteDataSource.getPopularMovies(pageToFetch))
+    }
+
+    @Test
+    fun getMovieDetails() = runTest {
+        val movieDetailsResponse = MovieResponse(
+            id = 1,
+            title = "The Batman",
+            tagline = "The Batman tagline",
+            overview = "The Batman Overview",
+            runtime = 240,
+            voteAverage = 7.8f,
+            releaseDate = GregorianCalendar(2022, Calendar.MARCH, 1).time,
+            genres = listOf(
+                MovieResponse.Genre(id = 1, name = "Action"),
+                MovieResponse.Genre(id = 2, name = "Crime")
+            ),
+            posterPath = "/batman-poster.jpg",
+            backdropPath = "/batman-backdropPath.jpg",
+            adult = false,
+            belongsToCollection = false,
+            budget = 0,
+            homepage = "",
+            imdbId = "",
+            originalLanguage = "",
+            originalTitle = "",
+            popularity = 0.0,
+            productionCompanies = emptyList(),
+            productionCountries = emptyList(),
+            revenue = 0,
+            spokenLanguages = emptyList(),
+            status = "",
+            video = false,
+            voteCount = 0
+        )
+        val expected = Result.success(movieDetailsResponse)
+
+        val mockMoviesApiClient = mockk<MoviesApiClient> {
+            coEvery { getMovieDetails(movieDetailsResponse.id) } returns Result.success(movieDetailsResponse)
+        }
+
+        val moviesRemoteDataSource =
+            MoviesRemoteDataSource(mockMoviesApiClient, UnconfinedTestDispatcher(testScheduler))
+
+        assertEquals(expected, moviesRemoteDataSource.getMovieDetails(movieDetailsResponse.id))
     }
 }

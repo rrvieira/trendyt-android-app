@@ -2,22 +2,18 @@ package com.rrvieira.trendyt.ui.home
 
 import com.rrvieira.trendyt.data.movies.MoviesRepository
 import com.rrvieira.trendyt.model.MovieSummary
-import com.rrvieira.trendyt.rules.MainDispatcherRule
+import com.rrvieira.trendyt.ui.BaseViewModelTest
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Rule
 import org.junit.Test
 import java.util.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class HomeViewModelTest {
-
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+class HomeViewModelTest: BaseViewModelTest() {
 
     @Test
     fun refreshMoviesSuccess() = runTest {

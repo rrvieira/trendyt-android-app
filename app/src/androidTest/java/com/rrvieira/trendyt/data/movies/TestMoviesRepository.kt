@@ -5,8 +5,21 @@ import com.rrvieira.trendyt.model.MovieSummary
 import java.util.*
 
 class TestMoviesRepository : MoviesRepository {
+
     override suspend fun fetchPopularMovies(page: Int): Result<List<MovieSummary>> = Result.success(
-        listOf(
+        popularMoviesList
+    )
+
+    override suspend fun fetchMovieDetails(id: Int): Result<MovieDetails> {
+        val movieDetails = movieDetailsList.find { it.id == id }
+
+        return movieDetails?.let {
+            Result.success(movieDetails)
+        } ?: Result.failure(Throwable("Movie not found"))
+    }
+
+    companion object {
+        val popularMoviesList = listOf(
             MovieSummary(
                 id = 0,
                 title = "Sonic the Hedgehog 2",
@@ -43,9 +56,20 @@ class TestMoviesRepository : MoviesRepository {
                 releaseDate = GregorianCalendar(2022, Calendar.AUGUST, 5).time
             )
         )
-    )
 
-    override suspend fun fetchMovieDetails(id: Int): Result<MovieDetails> {
-        TODO("Not yet implemented")
+        val movieDetailsList = listOf(
+            MovieDetails(
+                id = 1,
+                title = "The Batman",
+                releaseDate = GregorianCalendar(2022, Calendar.MARCH, 1).time,
+                runtime = 240,
+                tagline = "Tagline text",
+                overview = "Overview body",
+                voteAverage = 7.8f,
+                genres = listOf("Action", "Crime"),
+                backdropUrl = "http://some-url/another-image.jpg",
+                posterUrl = "http://some-url/image.jpg"
+            )
+        )
     }
 }

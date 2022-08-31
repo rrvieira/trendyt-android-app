@@ -14,33 +14,45 @@ import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.rrvieira.trendyt.ui.theme.TrendytTheme
 import com.rrvieira.trendyt.utils.DateFormatter
+import com.rrvieira.trendyt.utils.TimeFormatter
 
 @Composable
 fun TrendytApp() {
     val useDarkTheme = isSystemInDarkTheme()
 
-    CompositionLocalProvider(
-        LocalDateFormatter provides DateFormatter
-    ) {
-        TrendytTheme(useDarkTheme = useDarkTheme) {
-            val systemUiController = rememberSystemUiController()
-            SideEffect {
-                systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = !useDarkTheme)
-            }
-
-            Row(
-                Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .statusBarsPadding()
-                    .windowInsetsPadding(
-                        WindowInsets
-                            .navigationBars
-                            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                    )
-            ) {
-                TrendytNavGraph()
-            }
+    TrendytAppFoundation(useDarkTheme = useDarkTheme) {
+        val systemUiController = rememberSystemUiController()
+        //make sure the system bars match the current theme
+        SideEffect {
+            systemUiController.setSystemBarsColor(Color.Transparent, darkIcons = !useDarkTheme)
         }
+
+        Row(
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface)
+                .statusBarsPadding()
+                .windowInsetsPadding(
+                    WindowInsets
+                        .navigationBars
+                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                )
+        ) {
+            TrendytNavGraph()
+        }
+    }
+
+}
+
+@Composable
+fun TrendytAppFoundation(
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable() () -> Unit
+) {
+    CompositionLocalProvider(
+        LocalDateFormatter provides DateFormatter,
+        LocalTimeFormatter provides TimeFormatter
+    ) {
+        TrendytTheme(useDarkTheme = useDarkTheme, content = content)
     }
 }

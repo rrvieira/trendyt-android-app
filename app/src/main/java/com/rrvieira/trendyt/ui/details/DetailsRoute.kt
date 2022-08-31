@@ -17,9 +17,13 @@ fun DetailsRoute(
 
     viewModel.uiState.collectAsState().value.let { state ->
         when (state) {
-            is DetailsUiState.Empty -> Text(text = "EMPTY")
-            is DetailsUiState.NoDetails -> Text(text = "NoDetails")
-            is DetailsUiState.HasDetails -> HasDetailsScreen(
+            is DetailsUiState.Empty -> EmptyDetailsScreen(
+                uiState = state,
+                onTopBarBackPressed = onTopBarBackPressed,
+                onRetry = {
+                    viewModel.fetchMovieDetails(movieId)
+                })
+            is DetailsUiState.HasDetails -> DetailsScreen(
                 uiState = state,
                 onTopBarBackPressed = onTopBarBackPressed
             )

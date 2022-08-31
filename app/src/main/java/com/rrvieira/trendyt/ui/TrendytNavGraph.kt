@@ -7,10 +7,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.rrvieira.trendyt.ui.details.DetailsRoute
-import com.rrvieira.trendyt.ui.home.HomeRoute
 import com.rrvieira.trendyt.ui.TrendytDestinations.HOME_ROUTE
 import com.rrvieira.trendyt.ui.TrendytDestinations.MOVIE_ROUTE
+import com.rrvieira.trendyt.ui.details.DetailsRoute
+import com.rrvieira.trendyt.ui.home.HomeRoute
 
 @Composable
 fun TrendytNavGraph(

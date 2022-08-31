@@ -1,10 +1,8 @@
 package com.rrvieira.trendyt.ui.home
 
-import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.activity.compose.setContent
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onSiblings
 import com.rrvieira.trendyt.data.movies.TestMoviesRepository
 import com.rrvieira.trendyt.ui.MainActivity
 import com.rrvieira.trendyt.ui.TrendytApp
@@ -23,14 +21,28 @@ class HomeTest {
     @get:Rule(order = 2)
     var composeTestRule = createAndroidComposeRule<MainActivity>()
 
+    private val movieList = TestMoviesRepository.popularMoviesList
+
     @Before
     fun setup() {
         hiltTestRule.inject()
+        composeTestRule.activity.setContent {
+            TrendytApp()
+        }
     }
 
     @Test
     fun popularMoviesDisplayed() {
-        composeTestRule.onNodeWithText("Bullet Train").assertIsDisplayed()
-        //composeTestRule.onNodeWithText("Bullet Train").onSiblings().assertCountEquals(4)
+        //assert all items are displayed
+        movieList.forEach { movie ->
+            val node = composeTestRule.onNodeWithText(
+                text = movie.title
+            )
+
+            node.assertExists()
+            node.performTouchInput {
+                swipeUp()
+            }
+        }
     }
 }

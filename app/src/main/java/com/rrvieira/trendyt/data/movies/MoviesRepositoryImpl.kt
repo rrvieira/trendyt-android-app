@@ -2,6 +2,7 @@ package com.rrvieira.trendyt.data.movies
 
 import com.rrvieira.trendyt.data.configuration.ConfigurationRepository
 import com.rrvieira.trendyt.model.*
+import kotlin.math.roundToInt
 
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
@@ -36,12 +37,11 @@ class MoviesRepositoryImpl(
                     MovieDetails(
                         id = details.id,
                         title = details.title,
+                        runtime = details.runtime,
                         tagline = details.tagline,
                         overview = details.overview,
                         releaseDate = details.releaseDate,
-                        popularity = details.popularity,
-                        voteAverage = details.voteAverage,
-                        voteCount = details.voteCount,
+                        voteAverage = (details.voteAverage * 10.0f).roundToInt() / 10.0f,
                         genres = details.genres.map { genre ->
                             genre.name
                         },

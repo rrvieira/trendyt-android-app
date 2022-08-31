@@ -32,6 +32,10 @@ class NetworkModule {
         Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
+            /** Setups a custom call adapter factory to avoid using a "result wrapper" that is
+            dependant on the Retrofit library. This way we can define an interface as an
+            abstraction layer for it: [MoviesApiClient].
+            **/
             .addCallAdapterFactory(ResultCallAdapterFactory())
             .client(okHttpClient)
             .build()

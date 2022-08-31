@@ -5,12 +5,11 @@ import java.util.*
 data class MovieDetails(
     val id: Int,
     val title: String,
+    val runtime: Int,
     val tagline: String,
     val overview: String,
     val releaseDate: Date,
-    val popularity: Double,
-    val voteAverage: Double,
-    val voteCount: Int,
+    val voteAverage: Float,
     val genres: List<String>,
     val backdropUrl: String,
     val posterUrl: String

@@ -3,6 +3,9 @@
 
     <string name="no_movies_message">No movies to show at the moment.\nPlease come back later.</string>
 
-    <string name="no_network_message">You mat be offline. Check your connection.</string>
+    <string name="movie_details_overview_title">Overview</string>
+    <string name="time_separator_char"> • </string>
+
+    <string name="no_network_message">You may be offline. Check your connection.</string>
     <string name="retry_action">Retry</string>
 </resources>

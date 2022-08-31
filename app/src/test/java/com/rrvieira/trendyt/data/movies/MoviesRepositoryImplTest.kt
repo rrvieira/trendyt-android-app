@@ -1,8 +1,10 @@
 package com.rrvieira.trendyt.data.movies
 
+import com.rrvieira.trendyt.api.responses.MovieResponse
 import com.rrvieira.trendyt.api.responses.PopularMovie
 import com.rrvieira.trendyt.api.responses.PopularMoviesResponse
 import com.rrvieira.trendyt.data.configuration.ConfigurationRepository
+import com.rrvieira.trendyt.model.MovieDetails
 import com.rrvieira.trendyt.model.MovieSummary
 import io.mockk.coEvery
 import io.mockk.every
@@ -95,5 +97,76 @@ class MoviesRepositoryImplTest {
             MoviesRepositoryImpl(mockMoviesRemoteDataSource, mockConfigurationRepository)
 
         assertEquals(expected, moviesRepository.fetchPopularMovies(pageToFetch))
+    }
+
+    @Test
+    fun fetchMovieDetails() = runTest {
+        val movieId = 1
+        val movieGenres = listOf("Action", "Crime")
+        val movieDetailsResponse = MovieResponse(
+            id = movieId,
+            title = "The Batman",
+            tagline = "The Batman tagline",
+            overview = "The Batman Overview",
+            runtime = 240,
+            voteAverage = 7.8f,
+            releaseDate = GregorianCalendar(2022, Calendar.MARCH, 1).time,
+            genres = listOf(
+                MovieResponse.Genre(id = 0, movieGenres[0]),
+                MovieResponse.Genre(id = 1, movieGenres[1])
+            ),
+            posterPath = "/batman-poster.jpg",
+            backdropPath = "/batman-backdropPath.jpg",
+            adult = false,
+            belongsToCollection = false,
+            budget = 0,
+            homepage = "",
+            imdbId = "",
+            originalLanguage = "",
+            originalTitle = "",
+            popularity = 0.0,
+            productionCompanies = emptyList(),
+            productionCountries = emptyList(),
+            revenue = 0,
+            spokenLanguages = emptyList(),
+            status = "",
+            video = false,
+            voteCount = 0
+        )
+
+        val posterImageUrl = "http://some-url/image.jpg"
+        val backdropImageUrl = "http://some-url/another-image.jpg"
+
+        val expected = Result.success(
+            MovieDetails(
+                id = movieDetailsResponse.id,
+                title = movieDetailsResponse.title,
+                releaseDate = movieDetailsResponse.releaseDate,
+                runtime = movieDetailsResponse.runtime,
+                tagline = movieDetailsResponse.tagline,
+                overview = movieDetailsResponse.overview,
+                voteAverage = movieDetailsResponse.voteAverage,
+                genres = listOf(movieGenres[0], movieGenres[1]),
+                backdropUrl = backdropImageUrl,
+                posterUrl = posterImageUrl
+            )
+        )
+
+        val mockMoviesRemoteDataSource = mockk<MoviesRemoteDataSource> {
+            coEvery { getMovieDetails(movieId) } returns Result.success(
+                movieDetailsResponse
+            )
+        }
+        val mockConfigurationRepository = mockk<ConfigurationRepository> {
+            coEvery { fetchConfiguration() } returns Result.success(mockk {
+                every { urlForBackdrop(movieDetailsResponse.backdropPath) } returns backdropImageUrl
+                every { urlForPoster(movieDetailsResponse.posterPath) } returns posterImageUrl
+            })
+        }
+
+        val moviesRepository =
+            MoviesRepositoryImpl(mockMoviesRemoteDataSource, mockConfigurationRepository)
+
+        assertEquals(expected, moviesRepository.fetchMovieDetails(movieId))
     }
 }
