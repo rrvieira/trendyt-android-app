@@ -17,6 +17,9 @@ fun HomeRoute(
             is HomeUiState.HasMovies -> MovieFeedScreen(
                 uiState = state,
                 moviesLazyListState = lazyListState,
+                onRefreshMovies = {
+                    viewModel.refreshMovies()
+                },
                 onSelectMovie = onSelectMovie
             )
             is HomeUiState.NoMovies -> NoMoviesScreen(

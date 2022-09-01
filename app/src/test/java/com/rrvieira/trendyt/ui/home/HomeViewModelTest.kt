@@ -44,7 +44,7 @@ class HomeViewModelTest: BaseViewModelTest() {
         assertNotNull("Current state not expected", state)
         assertEquals(expected, state?.moviesFeed)
         assertEquals(emptyList<String>(), state?.errorMessages)
-        assertEquals(false, state?.isLoading)
+        assertEquals(false, state?.isRefreshing)
     }
 
     @Test
@@ -60,6 +60,6 @@ class HomeViewModelTest: BaseViewModelTest() {
 
         val state = homeViewModel.uiState.value
         assertEquals(expected, state.errorMessages)
-        assertEquals(false, state.isLoading)
+        assertEquals(false, state.isRefreshing)
     }
 }

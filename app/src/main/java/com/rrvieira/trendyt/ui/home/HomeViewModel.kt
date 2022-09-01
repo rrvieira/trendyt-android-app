@@ -12,9 +12,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository) : ViewModel() {
 
-    private val viewModelState = MutableStateFlow(HomeViewModelState(isLoading = true))
+    private val viewModelState = MutableStateFlow(HomeViewModelState(isRefreshing = true))
 
-    // UI state exposed to the UI
     val uiState = viewModelState
         .map { it.toUiState() }
         .stateIn(
@@ -28,57 +27,57 @@ class HomeViewModel @Inject constructor(private val moviesRepo: MoviesRepository
     }
 
     fun refreshMovies() {
-        viewModelState.update { it.copy(isLoading = true, errorMessages = emptyList()) }
+        viewModelState.update { it.copy(isRefreshing = true, errorMessages = emptyList()) }
 
         viewModelScope.launch {
             val result = moviesRepo.fetchPopularMovies(1)
             viewModelState.update { state ->
                 val feed = result.getOrElse { throwable ->
                     val errorMessages = state.errorMessages + (throwable.message ?: "")
-                    return@update state.copy(errorMessages = errorMessages, isLoading = false)
+                    return@update state.copy(errorMessages = errorMessages, isRefreshing = false)
                 }
 
-                state.copy(moviesFeed = feed, isLoading = false, errorMessages = emptyList())
+                state.copy(moviesFeed = feed, isRefreshing = false, errorMessages = emptyList())
             }
         }
     }
 }
 
 sealed interface HomeUiState {
-    val isLoading: Boolean
+    val isRefreshing: Boolean
     val errorMessages: List<String>
     val hasError: Boolean
         get() = errorMessages.isNotEmpty()
 
     data class NoMovies(
-        override val isLoading: Boolean,
+        override val isRefreshing: Boolean,
         override val errorMessages: List<String>
     ) : HomeUiState
 
     data class HasMovies(
         val moviesFeed: List<MovieSummary>,
-        override val isLoading: Boolean,
+        override val isRefreshing: Boolean,
         override val errorMessages: List<String>
     ) : HomeUiState
 }
 
 private data class HomeViewModelState(
     val moviesFeed: List<MovieSummary>? = null,
-    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val errorMessages: List<String> = emptyList()
 ) {
     fun toUiState(): HomeUiState =
         when {
-            moviesFeed != null -> {
+            moviesFeed != null && moviesFeed.isNotEmpty() -> {
                 HomeUiState.HasMovies(
                     moviesFeed = moviesFeed,
-                    isLoading = isLoading,
+                    isRefreshing = isRefreshing,
                     errorMessages = errorMessages,
                 )
             }
             else -> {
                 HomeUiState.NoMovies(
-                    isLoading = isLoading,
+                    isRefreshing = isRefreshing,
                     errorMessages = errorMessages,
                 )
             }

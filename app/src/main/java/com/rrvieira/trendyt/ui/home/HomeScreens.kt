@@ -1,5 +1,6 @@
 package com.rrvieira.trendyt.ui.home
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -18,15 +20,61 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.rrvieira.trendyt.R
 import com.rrvieira.trendyt.model.MovieSummary
 import com.rrvieira.trendyt.ui.LocalDateFormatter
+import com.rrvieira.trendyt.ui.TrendytAppFoundation
 import com.rrvieira.trendyt.ui.components.Rating
 import com.rrvieira.trendyt.ui.components.RetryScreen
 import com.rrvieira.trendyt.utils.DateFormatter
+import java.util.*
+
+@Composable
+fun MovieFeedScreen(
+    modifier: Modifier = Modifier,
+    uiState: HomeUiState.HasMovies,
+    moviesLazyListState: LazyListState,
+    onRefreshMovies: () -> Unit,
+    onSelectMovie: (Int) -> Unit
+) {
+    HomeScaffold(
+        modifier = modifier,
+        lazyListState = moviesLazyListState
+    ) { contentPadding ->
+        SwipeRefresh(
+            modifier = modifier.padding(
+                WindowInsets.systemBars
+                    .only(WindowInsetsSides.Bottom)
+                    .add(WindowInsets(top = contentPadding.calculateTopPadding()))
+                    .asPaddingValues()
+            ),
+            state = rememberSwipeRefreshState(uiState.isRefreshing),
+            indicator = { state, refreshTriggerDistance ->
+                SwipeRefreshIndicator(
+                    state = state,
+                    refreshTriggerDistance = refreshTriggerDistance,
+                    contentColor = MaterialTheme.colorScheme.primary
+                )
+            },
+            onRefresh = onRefreshMovies
+        ) {
+            LazyColumn(
+                state = moviesLazyListState
+            ) {
+                itemsIndexed(items = uiState.moviesFeed) { _, item ->
+                    MovieItem(movieSummary = item, onSelect = onSelectMovie)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun NoMoviesScreen(
@@ -50,37 +98,12 @@ fun NoMoviesScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    if (uiState.isLoading) {
+                    if (uiState.isRefreshing) {
                         LinearProgressIndicator()
                     } else {
                         EmptyNotice()
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun MovieFeedScreen(
-    modifier: Modifier = Modifier,
-    uiState: HomeUiState.HasMovies,
-    moviesLazyListState: LazyListState,
-    onSelectMovie: (Int) -> Unit
-) {
-    HomeScaffold(
-        modifier = modifier,
-        lazyListState = moviesLazyListState
-    ) { contentPadding ->
-        LazyColumn(
-            contentPadding = WindowInsets.systemBars
-                .only(WindowInsetsSides.Bottom)
-                .add(WindowInsets(top = contentPadding.calculateTopPadding()))
-                .asPaddingValues(),
-            state = moviesLazyListState
-        ) {
-            itemsIndexed(items = uiState.moviesFeed) { _, item ->
-                MovieItem(movieSummary = item, onSelect = onSelectMovie)
             }
         }
     }
@@ -209,3 +232,100 @@ val LazyListState?.isScrolled: Boolean
     get() = this?.let {
         firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0
     } ?: false
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewMovieFeedScreen() {
+    TrendytAppFoundation {
+        MovieFeedScreen(
+            uiState = HomeUiState.HasMovies(
+                moviesFeed = (1..5).map { seed ->
+                    MovieSummary(
+                        id = seed,
+                        title = "Movie $seed",
+                        rating = 10f - seed,
+                        releaseDate = GregorianCalendar(2022 - seed, seed, seed).time,
+                        imageUrl = ""
+                    )
+                },
+                isRefreshing = false,
+                errorMessages = emptyList()
+            ),
+            moviesLazyListState = rememberLazyListState(),
+            onRefreshMovies = {}
+        ) {
+        }
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewNoMoviesScreenWithLoading() {
+    TrendytAppFoundation {
+        NoMoviesScreen(
+            uiState = HomeUiState.NoMovies(
+                isRefreshing = true,
+                errorMessages = emptyList()
+            )
+        ) {
+        }
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewNoMoviesScreenWithError() {
+    TrendytAppFoundation {
+        NoMoviesScreen(
+            uiState = HomeUiState.NoMovies(
+                isRefreshing = false,
+                errorMessages = listOf("some error")
+            )
+        ) {
+        }
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewHomeScaffold() {
+    TrendytAppFoundation {
+        HomeScaffold {
+            Text(
+                modifier = Modifier.padding(it),
+                text = "Some content"
+            )
+        }
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewMovieItem() {
+    TrendytAppFoundation {
+        MovieItem(
+            movieSummary = MovieSummary(
+                id = 1,
+                title = "Title",
+                rating = 8.5f,
+                releaseDate = GregorianCalendar(2022, Calendar.MARCH, 1).time,
+                imageUrl = ""
+            ),
+            onSelect = {}
+        )
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewEmptyNotice() {
+    TrendytAppFoundation {
+        EmptyNotice()
+    }
+}

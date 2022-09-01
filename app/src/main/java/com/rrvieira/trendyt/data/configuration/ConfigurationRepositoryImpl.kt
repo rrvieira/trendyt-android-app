@@ -5,6 +5,9 @@ import com.rrvieira.trendyt.model.ApiConfiguration
 class ConfigurationRepositoryImpl(
     private val configurationRemoteDataSource: ConfigurationRemoteDataSource
 ) : ConfigurationRepository {
+    //this api configuration data is rarely changed.
+    //we can safely use an in-memory caching to avoid retrieving this data repeatedly in short
+    //intervals of time
     private var apiConfiguration: ApiConfiguration? = null
 
     override suspend fun fetchConfiguration(): Result<ApiConfiguration> {
