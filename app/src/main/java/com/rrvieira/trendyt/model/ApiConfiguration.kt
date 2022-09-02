@@ -6,7 +6,8 @@ data class ApiConfiguration(
     val backdropSize: String
 ) {
 
-    fun urlForPoster(poster: String) = "$imagesBaseUrl$posterSize$poster"
+    fun urlForPoster(poster: String?) = poster?.let { "$imagesBaseUrl$posterSize$poster" } ?: ""
 
-    fun urlForBackdrop(backdrop: String) = "$imagesBaseUrl$backdropSize$backdrop"
+    fun urlForBackdrop(backdrop: String?) =
+        backdrop?.let { "$imagesBaseUrl$backdropSize$backdrop" } ?: ""
 }

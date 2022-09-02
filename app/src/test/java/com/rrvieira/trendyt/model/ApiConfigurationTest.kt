@@ -16,12 +16,14 @@ class ApiConfigurationTest {
     fun urlForPoster() {
         val posterFile = "/poster.jpg"
         assertEquals("$BASE_URL$POSTER_SIZE$posterFile", configuration.urlForPoster(posterFile))
+        assertEquals("", configuration.urlForPoster(null))
     }
 
     @Test
     fun urlForBackdrop() {
         val backdropFile = "/backdrop.jpg"
         assertEquals("$BASE_URL$BACKDROP_SIZE$backdropFile", configuration.urlForBackdrop(backdropFile))
+        assertEquals("", configuration.urlForBackdrop(null))
     }
 
     private companion object {
