@@ -4,6 +4,7 @@ Trendyt is a sample movie listing android app. The goal of this project is to sh
 
 A few quick project highlights:
 - MVI Architecture
+- Coroutines
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) UI with [Material Design 3](https://m3.material.io/) components
 	- Dynamic light/dark theming support
 	- Two screens:
