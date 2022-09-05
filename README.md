@@ -19,7 +19,7 @@ A few quick project highlights:
 
 ### Try Trendyt
 
-To try out Trendyt, after cloning this repository and opening it in Android Studio, you need to set your personal TMDD API Key.
+To try out Trendyt, after cloning this repository and opening it in Android Studio, you need to set your personal [TMDB](https://www.themoviedb.org/) API Key.
 
 In your `local.properties` project file add:
 ```
@@ -32,6 +32,10 @@ Notes:
 
 ### Demo
 
+#### General
+
 [trendyt-demo.webm](https://user-images.githubusercontent.com/3785821/188210161-e2dcb2a9-7a37-4f20-bc08-a98bf2e9fc7b.webm)
+
+#### Dynamic Theme
 
 [trendyt-dynamic-themes.webm](https://user-images.githubusercontent.com/3785821/188213172-2b5b62db-5222-400e-b46c-d82553bcefcd.webm)
